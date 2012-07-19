@@ -4,6 +4,8 @@ function [chip_rate_hist cst_err_hist cst_hist lock_hist magnitude_hist phi_err_
 % [chip_rate_hist cst_err_hist cst_hist lock_hist magnitude_hist phi_err_hist...
 %   phi_if_hist rmse_hist tracking_hist w_df_err_hist w_df_hist] = ...
 %   LOAD_TRACK(sv)
+%
+% Loads track history for SV "sv" from the TRACK_DIRECTORY
 
 global TRACK_DIRECTORY COH_INT_TIME
 
