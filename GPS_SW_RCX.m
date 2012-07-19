@@ -75,7 +75,13 @@ elseif(choose == 1)
     end
     fprintf('Elapsed time is %s\n',datestr(datenum(0,0,0,0,0,toc(tStart)),'HH:MM:SS'))
 elseif(choose == 2)
-    sv = input('Please enter satellites to obtain\nnavigation solution: ');
+    sv = LIST_AVAIL_TRACKS();
+    svInp = input(['Enter satellites to obtain navigation solution from. '...
+        'Press enter for [' sprintf('%02u ',sv) ']\n:']);
+    if(~isempty(svInp))
+        sv = svInp;
+    end
+    
     rPos = input('Please enter position sampling reduction factor (1 => 1000 Hz): ');
     useIcp = input('Use differential mode? (default no): ');
     rVel = input('Please enter velocity sampling reduction factor (1 => 1000 Hz): ');
