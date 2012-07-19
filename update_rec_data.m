@@ -22,7 +22,7 @@ if Rec.EphType~=1 || Rec.IonType~=1
     
     % Check if data is newer.
     if ephType<Rec.EphType || Rec.EphType==0
-        fprintf('\nUpdating eph. from type %d to type %d.',Rec.EphType,ephType)
+        fprintf('\nUpdating eph. from type %d to type %d.\n',Rec.EphType,ephType)
         Rec.Eph = C;
         Rec.EphType = ephType;
     else
@@ -30,7 +30,7 @@ if Rec.EphType~=1 || Rec.IonType~=1
     end
     
     if ionType<Rec.IonType || Rec.IonType==0
-        fprintf('Updating ion from type %d to type %d.',Rec.IonType,ionType)
+        fprintf('Updating ion from type %d to type %d.\n',Rec.IonType,ionType)
         Rec.Ion = I;
         Rec.IonType = ionType;
     else
