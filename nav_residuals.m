@@ -34,7 +34,7 @@ switch string
         rNvel   = nSv*(N-1);
         rNacc   = N-2;
         rNjerk  = 4*(N-3);
-        rNwuv   = N-3;
+        rNwuv   = N-3;      % wind-up-velocity
         
         rNtot = rNrange +rNvel +rNacc + rNjerk + rNwuv;
         
@@ -56,20 +56,20 @@ switch string
         tempInd = rNrange+rNvel+(1:rNacc);
         w(tempInd(max(abs(accBody),[],2)>15)) = 0;
         
-        w(rNrange+rNvel+rNacc+1:end) = weights(4); % Weighting for the jerk.
-        w(rNrange+rNvel+rNacc+1+3*(N-3):end) = 0; % Do not filter LO
+        w(rNrange+rNvel+rNacc+1:end) = weights(4);         % Weighting for the jerk.
+        w(rNrange+rNvel+rNacc+1+3*(N-3):end) = weights(5); % Clock error jerk.
         
-        w(rNrange+rNvel+rNacc+rNjerk+1:end) = 1e+2; %wind up velocity
+        w(rNrange+rNvel+rNacc+rNjerk+1:end) = weights(6);  % Wind-up velocity
         
         % Call the 'turnOn' method to only enable some parts of the
-        % solution.
+        % problem.
         nav_residuals('turnOn', turnOn);
         
         % This is the satellites coordinates in the ECI frame. This is
         % keept to facilitade fixed point iteration. I think the ECI velocity
-		% should be used, as opposed to the ECEF.
+        % should be used, as opposed to the ECEF.
         svPosCorr = svPos;
-		svVelCorr = svVel;
+        svVelCorr = svVel;
         
         % ##### START OF JACOBIAN #####
         % Start building the index vectors for the sparse Jacobian.
@@ -171,10 +171,10 @@ switch string
         turnOn  = varargin{1};
         
         wTemp = w;
-        wTemp(rNrange+(1:rNvel)) = w(rNrange+(1:rNvel))*(turnOn(1)==1);
-        wTemp(rNrange+rNvel+(1:rNacc)) = w(rNrange+rNvel+(1:rNacc))*(turnOn(2)==1);
-        wTemp(rNrange+rNvel+rNacc+(1:rNjerk)) = w(rNrange+rNvel+rNacc+(1:rNjerk))*(turnOn(3)==1);
-        wTemp(end-rNwuv+1:end) = w(end-rNwuv+1:end)*(turnOn(1)==1);
+        wTemp(rNrange+(1:rNvel)) = w(rNrange+(1:rNvel))*(turnOn(1)==1);             % Velocity
+        wTemp(rNrange+rNvel+(1:rNacc)) = w(rNrange+rNvel+(1:rNacc))*(turnOn(2)==1); % Acceleration
+        wTemp(rNrange+rNvel+rNacc+(1:rNjerk)) = w(rNrange+rNvel+rNacc+(1:rNjerk))*(turnOn(3)==1); % Jerk
+        wTemp(end-rNwuv+1:end) = w(end-rNwuv+1:end)*(turnOn(1)==1);                 % Wind-up accelerations
         
         sqrW = sparse(1:rNtot,1:rNtot,sqrt(wTemp));
     case 'Func'
@@ -197,17 +197,17 @@ switch string
         % Rotate the SVs back by the Earths rotation during the transit
         % time, to get the positions in the ECI frame.
         phi = tTransit*OmegaE;
-		sinPhi = sin(phi);
-		cosPhi = cos(phi);
-		
+        sinPhi = sin(phi);
+        cosPhi = cos(phi);
+        
         svPosCorr(:,:,1) =  cosPhi.*svPos(:,:,1) + sinPhi.*svPos(:,:,2);
         svPosCorr(:,:,2) = -sinPhi.*svPos(:,:,1) + cosPhi.*svPos(:,:,2);
         
         phi = (phi(1:end-1,:)+phi(2:end,:))/2;
-		sinPhi = sin(phi);
-		cosPhi = cos(phi);
+        sinPhi = sin(phi);
+        cosPhi = cos(phi);
         
-		svVelCorr(:,:,1) =  cosPhi.*svVel(:,:,1) + sinPhi.*svVel(:,:,2);
+        svVelCorr(:,:,1) =  cosPhi.*svVel(:,:,1) + sinPhi.*svVel(:,:,2);
         svVelCorr(:,:,2) = -sinPhi.*svVel(:,:,1) + cosPhi.*svVel(:,:,2);
         
         % Read out the accelerometer scale and bias.
@@ -336,73 +336,91 @@ switch string
         J(isnan(J)) = 0;
         
         % ### START PLOTTING ###
-        pos = reshape(beta(1:3*N),[N,3]);
-        meanPos = nanmean(pos);
-        velTime = (recTime(1:end-1)+recTime(2:end))/2;
-        s=10;
-        
-        figure(1)
-        subplot(2,2,1)
-         accTime = (recTime(1:end-2)+recTime(3:end))/2;
-%         plot(accTime,accBodyMag(:,1),'.')
-%         hold on
-        plot(accTime(1:s:end),accInerMag(1:s:end,1),'r')
-        ylim([0,30])
-        xlabel('Time [sec]')
-        ylabel('Acceleration [m/s^2]');
-        title('Acceleration magnitude')
-%         legend('Accelerometers','GPS')
-%         hold off
-         subplot(2,2,2)
-%         plot(accTime,accBody,'k')
-%         hold on
-        plot(accTime(1:s:end),project_vel(accIner(1:s:end,:),meanPos))
-        ylim([-20,20])
-        xlabel('Recevier time - [s]')
-        ylabel('Acceleration - [m/s^2]');
-        title('Acceleration local plane')
-        legend('E/W','N/S','Vert')
-%         hold off
-        subplot(2,2,3)
-        plot(velTime(1:s:end),dRec(1:s:end)*5.2550);
-        ylabel('LO [Hz]');
-%         refAre = 0.45;
-% %        refAre = pi*(58e-3)^2;
-%         dragConst = 2*1.06/(1.225*refAre);
-%         velAdj = (recVel(1:end-1,:)+recVel(2:end,:))/2;
-%         velMag = sqrt(sum(velAdj.^2,2));
-%         accProj = sum(accIner.*velAdj,2)./velMag;
-%         plot(accTime,-dragConst*accProj./velMag.^2)
-         xlabel('Time [sec]')
-%         ylabel('Drag coefficient');
-%         title('Drag')
-        subplot(2,2,4)
-%         accVelComp = repmat(accProj./velMag,[1,3]).*velAdj;
-%         plot(accTime,dragConst*...
-%             sqrt(sum((accIner-accVelComp).^2,2))./velMag.^2)
-        plot(velTime(1:s:end),windup(1:s:end,1)*5.2550)
-        xlabel('Time [sec]')
-        ylabel('Wind-up [Hz]');
-%         ylabel('Lift coefficient');
-%         title('Lift')
-        figure(2)
-%         subplot(2,2,2)
-%         plot(velTime,project_vel(recVel,meanPos));
-%         title('Velocity local plane')
-        subplot(2,2,4)
-        plot(velTime(1:s:end),sqrt(sum(recVel(1:s:end,:).^2,2)));
-        title('Velocity')
-        subplot(2,2,1)
-        plot(recTime,project_to_surface(pos));
-        title('Position local plane')
-        subplot(2,2,3)
-        klm = project_to_surface(pos);
-%         scatter(klm(1:s:end,1),klm(1:s:end,2),[],klm(1:s:end,3),'.')
-        plot(klm(1:s:end,1),klm(1:s:end,2))
-        axis square
-        title('Plane position')
-        drawnow
-        
+        if true
+            pos = reshape(beta(1:3*N),[N,3]);
+            meanPos = nanmean(pos);
+            velTime = (recTime(1:end-1)+recTime(2:end))/2;
+            s=10;       % a down sampling factor
+            
+            figure(1)
+            
+            subplot(2,2,1)  % IMU and GPS acceleration
+            accTime = (recTime(1:end-2)+recTime(3:end))/2;
+            plot(accTime(1:s:end),accBodyMag(1:s:end,1),'.')
+            hold on
+            plot(accTime(1:s:end),accInerMag(1:s:end,1),'r')
+            ylim([0,30])
+            xlabel('Time [sec]')
+            ylabel('Acceleration [m/s^2]');
+            title('Acceleration magnitude')
+            legend('Accelerometers','GPS')
+            hold off
+            
+            subplot(2,2,2)  % Vector valued accelerations
+            plot(accTime(1:s:end),accBody(1:s:end,:),'k')
+            hold on
+            plot(accTime(1:s:end),project_vel(accIner(1:s:end,:),meanPos))
+            ylim([-20,20])
+            xlabel('Time [sec]')
+            ylabel('Acceleration [m/s^2]');
+            title('Acceleration vectors')
+            legend('Body X', 'Body Y', 'Body Z',...
+                'E/W','N/S','Vert')
+            hold off
+            
+            subplot(2,2,3)  % LO offset
+            plot(velTime(1:s:end),dRec(1:s:end)*5.2550);
+            xlabel('Time [sec]')
+            ylabel('LO freq [Hz]');
+            title('LO offset')
+            
+            subplot(2,2,4)  % Wind-up
+            plot(velTime(1:s:end),windup(1:s:end,1)*5.2550)
+            xlabel('Time [sec]')
+            ylabel('Wind-up [Hz]');
+            
+            %         refAre = 0.45;    % Drag stuff
+            %         refAre = pi*(58e-3)^2;
+            %         dragConst = 2*1.06/(1.225*refAre);
+            %         velAdj = (recVel(1:end-1,:)+recVel(2:end,:))/2;
+            %         velMag = sqrt(sum(velAdj.^2,2));
+            %         accProj = sum(accIner.*velAdj,2)./velMag;
+            %         plot(accTime,-dragConst*accProj./velMag.^2)
+            %         xlabel('Time [sec]')
+            %         ylabel('Drag coefficient');
+            %         title('Drag')
+            
+            
+            figure(2)
+            
+            subplot(2,2,2) % Vector velocity
+            plot(velTime(1:s:end),project_vel(recVel(1:s:end,:),meanPos));
+            xlabel('Time [sec]')
+            ylabel('Velocity [m/s]');
+            title('Velocity local plane')
+            legend('E/W','N/S','Vert')
+            
+            subplot(2,2,4)  % Velocity
+            plot(velTime(1:s:end),sqrt(sum(recVel(1:s:end,:).^2,2)));
+            xlabel('Time [sec]')
+            ylabel('Velocity [m/s]');
+            title('Velocity')
+            
+            subplot(2,2,1)  % Local position
+            plot(recTime(1:s:end),project_to_surface(pos(1:s:end,:)));
+            xlabel('Time [sec]')
+            ylabel('Position [m/s]');
+            title('Position local plane')
+            
+            subplot(2,2,3)  % Position (top-down)
+            klm = project_to_surface(pos);
+            %         scatter(klm(1:s:end,1),klm(1:s:end,2),[],klm(1:s:end,3),'.')
+            plot(klm(1:s:end,1),klm(1:s:end,2))
+            axis square
+            title('Plane position')
+            
+            drawnow
+        end
         % ### END PLOTTING ###
         
         % Apply weighting to the output.
