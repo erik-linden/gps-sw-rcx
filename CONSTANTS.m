@@ -44,18 +44,16 @@ A_FLL = (1.89*FLL_BANDWIDTH).^2;     %DE = w_nF^2 = (1.89*B_LF)^2
 B_FLL = (sqrt(2)*1.89*FLL_BANDWIDTH);%EE = sqrt(2)*w_nF = sqrt(2)*1.89*B_LF
 
 % Data files
-% FILE_NAME = 'D:\Desktop\data\test3_spintable\raw\FFUAroof1353';
-% FILE_NAME = 'D:\Desktop\data\20120308_surveyed_point\raw\data.log';
-FILE_NAME = 'D:\Desktop\data\spin_canted\raw\20120427_164357_ROOFSPIN_1538.log';
-IS_COMPLEX = 0;                      %directive to read complex data
-% MAIN_FILE_NAME = 'D:\Desktop\data\droptest\Main FPGA data\FFUBTest5Main.log.bin.decoded';
-MAIN_FILE_NAME = 'D:\Desktop\data\spin_canted\main\20120427_164357_ROOFSPIN_MAIN.log.bin.decoded';
-
+work_dir        = 'D:\Desktop\data\spin_canted\';
+FILE_NAME       = [work_dir 'raw\20120427_164357_ROOFSPIN_1538.log'];
+MAIN_FILE_NAME  = [work_dir 'main\20120427_164357_ROOFSPIN_MAIN.log.bin.decoded'];
+TRACK_DIRECTORY = [work_dir ''];
+IS_COMPLEX      = 0;                      %directive to read complex data
 
 % Peripheral data files
-BIT_START_TIME_FILE = 'bst.mat';     %name of bit-start-time file
-RECEIVER_FILE = 'rec.mat';           %name of receiver information file
-DATA_PLOTTER = '..\RAIN_Electrical\Data Plotter';
+BIT_START_TIME_FILE = [work_dir 'bst.mat'];     %name of bit-start-time file
+RECEIVER_FILE   = [work_dir 'rec.mat'];         %name of receiver information file
+DATA_PLOTTER    = '..\RAIN_Electrical\Data Plotter';
 
 % Position solution
 POSITION_DB_LIMIT = 10;              %minimum SNR needed to be included in position solution [dB]

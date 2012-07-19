@@ -15,13 +15,13 @@ I = zeros(1,nSv);
 
 % Do for each SV.
 for n = 1:nSv
-    load(sprintf('tracking_hist_%d',sv(n)))
+    [~, ~, ~, ~, ~, ~, phi_if , ~, ~, ~, ~] = LOAD_TRACK(sv(n));
     
     % Find the index of the first chip in the first whole bit.
-    I(n) = BIT_LOCK(phi_if_hist,sv(n));
+    I(n) = BIT_LOCK(phi_if,sv(n));
     
     % Extract the data bits.
-    bit = BIT_EXTRACT(phi_if_hist, I(n));
+    bit = BIT_EXTRACT(phi_if, I(n));
     
     % Find the TOW at the leading edge of the first whole bit.
     tows = FIND_POS_TOW(bit);

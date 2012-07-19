@@ -7,11 +7,10 @@ function [carrierPhaseRate, refTime, weights] = DOPPLER(sv)
 
 global DOPPLER_DB_LIMIT DOPPLER_MAX_PHI_ERR COH_INT_TIME DOPPLER_EXL_RNG
 
-
 % Load the first file to see how big it is.
 nSv = length(sv);
-load(sprintf('tracking_hist_%d',sv(1)))
-dim1 = length(cst_hist);
+[~ , ~, cst, ~, ~, ~, ~ , ~ , ~ , ~, ~] =  LOAD_TRACK(sv(1));
+dim1 = length(cst);
 
 % Initialize vectors.
 carrierPhaseRate = nan(dim1,nSv);
@@ -19,25 +18,25 @@ refTime = nan(dim1,nSv);
 weights = zeros(dim1,nSv);
 
 for n = 1:nSv
-    load(sprintf('tracking_hist_%d',sv(n)))
+    [~ , ~, cst, ~, magnitude, phi_err, ~ , ~ , ~ , ~, w_df] =  LOAD_TRACK(sv(n));
         
     % Set the reference time to the center of the coherent integration interval.
-    refTime(:,n) = cst_hist + COH_INT_TIME/2;
+    refTime(:,n) = cst + COH_INT_TIME/2;
        
     % The carrier phase rate is the NCO, approximatly
-    carrierPhaseRate(:,n) = w_df_hist;
+    carrierPhaseRate(:,n) = w_df;
     
     % 1/mag.^2 is the variance for one sample, so for two...
-    weights(:,n) = [0;(magnitude_hist(1:end-1).^2/COH_INT_TIME)];
+    weights(:,n) = [0;(magnitude(1:end-1).^2/COH_INT_TIME)];
     
     % Exlude data with low CNO.
-    indCno = SNR(magnitude_hist)<DOPPLER_DB_LIMIT;
+    indCno = SNR(magnitude)<DOPPLER_DB_LIMIT;
     
     % Exlude data with large phase error.
-    indPhi = abs(phi_err_hist)>DOPPLER_MAX_PHI_ERR*pi/180;
+    indPhi = abs(phi_err)>DOPPLER_MAX_PHI_ERR*pi/180;
     
     % Exclude data where tracking did not lock.
-    indLock = isnan(cst_hist);
+    indLock = isnan(cst);
 
     % Exclude a range around bad data.
     ind = indCno|indPhi|indLock;

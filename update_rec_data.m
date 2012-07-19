@@ -95,4 +95,4 @@ if exist('pos.mat','file')
 end
 
 % Save the new file.
-save('rec','Rec')
+save(RECEIVER_FILE,'Rec')

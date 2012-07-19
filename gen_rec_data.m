@@ -91,15 +91,16 @@ Rec.EphType = ephType;
 Rec.Ion = I;
 Rec.IonType = ionType;
 
-% Save the rec-file to make it avaliable to ESTIMATE_DOPPLER.
-save('rec','Rec')
-
 % Set globals for ESTIMATE_DOPPLER
-fprintf('\n..Estimating noise..\n')
 clear global;
 global INITIALIZE RECEIVER_FILE
 INITIALIZE = 1;
 RECEIVER_FILE = 'rec';
+
+% Save the rec-file to make it avaliable to ESTIMATE_DOPPLER.
+save(RECEIVER_FILE,'Rec')
+
+fprintf('\n..Estimating noise..\n')
 
 if ~isempty(C)
     % Find the elevation of all SVs.
@@ -136,7 +137,7 @@ alpha = estimate_noise_alpha(sortedSv(1:indLast),1,nFile); %nPrn = 2,
 Rec.Alpha = alpha;
 
 % Save the receiver file.
-save('rec','Rec')
+save(RECEIVER_FILE,'Rec')
 
 % Clean up.
 clear all

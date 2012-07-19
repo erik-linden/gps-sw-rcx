@@ -7,19 +7,19 @@ function [icpPseudoRange, refTime] = ICP_PSEUDO_RANGE(sv)
 global L1
 
 nSv = length(sv);
-load(sprintf('tracking_hist_%d',sv(1)))
-dim1 = length(cst_hist);
+[~, ~, cst, ~, ~, ~, ~, ~, ~, ~, ~] = LOAD_TRACK(sv(1));
+dim1 = length(cst);
 
 icpPseudoRange = nan(dim1,nSv);
 refTime = nan(dim1,nSv);
 
 for n = 1:nSv
-    load(sprintf('tracking_hist_%d',sv(n)))
+    [~, ~, cst , ~, ~, ~, ~, ~, ~, ~, w_df] = LOAD_TRACK(sv(n));
     
     % Clean up data vectors.
-    indGood = ~isnan(cst_hist);
-    cst_clean = cst_hist(indGood);
-    w_df_clean = w_df_hist(indGood);
+    indGood = ~isnan(cst);
+    cst_clean = cst(indGood);
+    w_df_clean = w_df(indGood);
     
     % Define some stuff...
     deltaT = diff(cst_clean);
