@@ -3,8 +3,8 @@ CONSTANTS;
 
 % Return all zeros if there is no Data Plotter.
 if(isempty(DATA_PLOTTER)||isempty(MAIN_FILE))
-    a = zeros(length(recTime,3));
-    correction = zeros(length(recTime,3));
+    a = zeros(length(recTime)-2,3);
+    correction = zeros(length(recTime)-2,3);
     return
 end
 
