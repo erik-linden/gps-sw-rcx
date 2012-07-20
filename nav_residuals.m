@@ -2,7 +2,7 @@ function  varargout = nav_residuals(string,varargin)
 
 persistent rangeCorr wRange recTime prRefTime accBody accCorr
 persistent dopplerCorr wDoppler svPos svVel rNacc
-persistent deltaT N nSv jRes jPar jVal rNtot rNwuv
+persistent deltaT N sv nSv jRes jPar jVal rNtot rNwuv
 persistent rNrange rNvel rNjerk  w sqrW svPosCorr svVelCorr
 
 switch string
@@ -459,6 +459,6 @@ switch string
             
             save(sprintf('%sposLS',TRACK_DIRECTORY),'posHist','gpsTimeHist',...
                 'recTime','dopHist','resHist', 'velHist','loHist','velRecTime',...
-                'velDopHist','velResHist', 'accSlope','accBias','windUp');
+                'velDopHist','velResHist', 'accSlope','accBias','windUp','sv');
         end
 end
