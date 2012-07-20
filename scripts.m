@@ -66,25 +66,24 @@ ylabel('Relative position N/S [meter]')
 
 %% Velocity magnitude
 r = 10;  %downsampling factor
-s = 100; %smoothing factor
+s = 10; %smoothing factor
 ind = 1:r:length(velRecTime);
 
 plot(velRecTime(ind),smooth(sqrt(sum(velHistProj(ind,1:3).^2,2)),s))
 axis tight
-title('Velocity')
+title(sprintf('Velocity smoothed %u samples',s))
 xlabel('Time [sec]')
 ylabel('Velocity [m/s]')
 xlim([0,max(velRecTime)])
 
-
 %% LO
-r = 10;  %downsampling factor
-s = 100; %smoothing factor
+r = 10; %downsampling factor
+s = 10; %smoothing factor
 ind = 1:r:length(velRecTime);
 
 plot(velRecTime(ind),smooth(loHist(ind),s)/(2*pi))
 xlim([0,max(velRecTime)])
-titel(sprintf('LO Frequency smoothed %u samples',s))
+title(sprintf('LO Frequency smoothed %u samples',s))
 xlabel('Time [sec]')
 ylabel('LO error [Hz]')
 
@@ -95,133 +94,54 @@ timeErr = absTime - recTime;
 p = polyfit(absTime,timeErr,2);
 
 plot(absTime,(timeErr-polyval(p,absTime))*1e9)
-title(sprintf('Third-order clock error\nDrift is %.1G ns/s and %.1G ns/s^2',p(2)*1e9,p(1)*1e9))
+title(sprintf('Third-order clock error\nDrift is %.2g ns/s and %.2g ns/s^2',p(2)*1e9,p(1)*1e9))
 ylabel('Residual error [ns]')
 xlabel('"True" time [sec]')
-%%
-k = 1000;
-plot(recTime,reshape(smooth(resHist,k),size(resHist)))
+
+%% Range residuals
+s = 1000; %smoothing factor
+
+plot(recTime,reshape(smooth(resHist,s),size(resHist)))
+title(sprintf('Range residuals smoothed %u samples',s))
 xlabel('Time [sec]')
 ylabel('Range residual [meter]')
-xlim([0,92])
+legend(num2str(sv'))
 
-%%
-k = 1000;
-plot(reshape(smooth(velResHist,k),size(velResHist)))
+%% Velocity residuals
+s = 1000; %smoothing factor
 
-%%
-figure
-Hs=spectrum.welch('Hamming',2^11,50);
-Hpsd = psd(Hs,posHistProj(:,1),'FreqPoints','User Defined','FrequencyVector',3:.01:6,'Fs',1e3);
-% Hpsd2 = psd(Hs,posHistProj(:,2),'FreqPoints','User Defined','FrequencyVector',3:.001:6,'Fs',1e3);
-% plot(Hpsd.Frequencies,sqrt(Hpsd.Data.^2+Hpsd2.Data.^2))
-plot(Hpsd.Frequencies,Hpsd.Data)
-
-
-%%
-nfft = 2^19;
-P = fft(posHistProj(:,1),nfft);
-plot(linspace(0,1000,nfft),2*abs(P)/length(posHistProj))
-
-
-%% Plot velocity vs. time
-lla = ecef2lla(velHist);
-klm = project_vel(velHist,pos);
-
-plot(velRecTime,klm)
-grid on
-
-title('Velocity')
-legend('E/W','N/S','Up/Down')
+plot(velRecTime,reshape(smooth(velResHist,s),size(velResHist)))
+title(sprintf('Velocity residuals smoothed %u samples',s))
 xlabel('Time [sec]')
-ylabel('Velocity [m/s]')
+ylabel('Range residual [meter]')
+legend(num2str(sv'))
 
-%%
-indGood = ~isnan(velHist(:,1));
-dim1 = length(velRecTime);
+%% Wind-up rate
+plot(velRecTime,windUp*L1/C)
+title('Carrier wind-up')
+xlabel('Time [sec]')
+ylabel('Wind-up rate [Hz]');
 
-velPos = zeros(dim1+1,3);
-for n = 1:3
-    velClean = interp1(velRecTime(indGood),velHist(indGood,n),...
-        velRecTime,'linear','extrap');
-    
-    tSpl = (velRecTime(1:end-1)+velRecTime(2:end))/2;
-    dt = diff(tSpl);
-    mDt = mean(dt);
-    dt = [dt(1)-mDt, dt', dt(end)+mDt]';
-    relPos = [0; cumsum(velClean).*dt];
-    
-    relPos = relPos - mean(relPos(1:end-10,:)) + nanmean(posHist(1:end-10,n));
-    
-    velPos(:,n) = relPos;
-end
+%% Drag coefficent
+deltaT = nanmean(diff(recTime));
 
-lla = ecef2lla(velPos(1:end-40,:));
-% kmlStr = ge_plot(lla(:,2),lla(:,1));
-% ge_output('ge_output.kml',kmlStr);
+[gx,gy,gz] = xyz2grav(posHist(2:end-1,1),...
+            posHist(2:end-1,2),...
+            posHist(2:end-1,3),...
+            deltaT);
+        
+acc = diff(posHist,2)/deltaT^2;
+accIner = acc - [gx,gy,gz];
 
-plot(velRecTime,project_to_surface(velPos(1:end-1,:)))
+accTime = (velRecTime(1:end-1)+velRecTime(2:end))/2;
 
-%% 
-p = 0.995;
-
-indGood = ~isnan(klm(:,1));
-
-fnplt(fnder(csaps(velRecTime(indGood),klm(indGood,:)',p)))
-grid on
-
-%%
-ind = ~isnan(velHist(:,1));
-temp=fnval(pp,timeVelPos);
-col=['b' 'g' 'r'];
-for n = 1:3
-    plot(recTimeVel(ind),smooth(velHist(ind,n),50))
-    hold on
-    plot(timeVelPos,temp(n,:),col(n))
-end
-hold off
-
-%%
-% pos = nanmean(velPos);
-% 
-% uvw = project_vel(velCorr, pos);
-% col=['b' 'g' 'r'];
-% 
-% for n=1:3
-%     plot(recTimeVel,smooth(uvw(:,n),50),col(n))
-%     hold on
-% end
-% hold off
-% title('Velocity, smoothed')
-% legend('E/W','N/S','Vertical')
-% xlabel('Time - [s]')
-% ylabel('Velocity - [m/s]')
-%  
-% disp(sqrt(nanmean(uvw(:,1))^2+nanmean(uvw(:,2))^2))
-% disp(nanmean(uvw(:,3)))
-% 
-% %%
-% qq = ppdiff(pp,1);
-% 
-% v=fnval(pp,timeVelPos);
-% a=fnval(qq,timeVelPos);
-% 
-% m = 1;
-% A = 1;%pi*0.06^2;
-% rho = 1;
-% g = 9.82;
-% 
-% a_in = a;
-% a_in(3,:) = a_in(3,:)+g/m;
-% 
-% cd=-2*dot(v,a_in)*m./(rho*A*sum(v.^2).^(3/2));
-% figure
-% plot(timeVelPos,cd)
-% 
-% title('Drag')
-% xlabel('Time - [s]')
-% ylabel('Drag area per mass - [Cd*A/m]')
-% 
-% %%
-% plot(recTimeVel,smooth(sqrt(sum(velCorr.^2,2)),10))
-%     
+% refAre = 0.45;    % Drag stuff
+refAre = pi*(58e-3)^2;
+dragConst = 2*1.06/(1.225*refAre);
+velAdj = (velHist(1:end-1,:)+velHist(2:end,:))/2;
+velMag = sqrt(sum(velAdj.^2,2));
+accProj = sum(accIner.*velAdj,2)./velMag;
+plot(accTime,-dragConst*accProj./velMag.^2)
+xlabel('Time [sec]')
+ylabel('Drag coefficient');
+title('Drag')
