@@ -2,7 +2,7 @@
 clear globals;
 CONSTANTS_H;
 CONSTANTS;
-sv = [5 7 8 9 11 15 17 18 19 26 27 28];%[3 5 7 8 15 18 19 21 26 27 28];%[2 5 6 10 12 13 16 21 23 25 29 30 31];%[2 5 10 12 21 23 25 29 30 31];[5 7 8 15 19 26 28];
+sv = LIST_AVAIL_TRACKS;
 nSv = length(sv);
 l = 296999;
 color = varycolor(nSv);
