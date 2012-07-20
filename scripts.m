@@ -1,7 +1,7 @@
 %% Local plot
 % dub 3098830.3422 1010993.2627 5463999.7967 ITRF2008
 dub = [3098830.3422 1010993.2627 5463999.7967];
-load('posLS')
+load(sprintf('%sposLS.mat',TRACK_DIRECTORY))
 w = 1./sum(dopHist(:,1:3).^2,2);
 w(~isfinite(w)) = 0;
 

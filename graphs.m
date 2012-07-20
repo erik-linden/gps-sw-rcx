@@ -17,7 +17,7 @@ t = linspace(0,l*1e-3,l);
 figure
 hold on
 for n = 1:nSv
-    load(sprintf('tracking_hist_%d',sv(n)))
+    load(sprintf('%stracking_hist_%d',TRACK_DIRECTORY,sv(n)))
     
     sumNotTracked = sum(~tracking_hist(1:l));
     sumNotLocked = sum(~lock_hist(1:l));
@@ -55,7 +55,7 @@ h2=figure();
 hold on
 % h3=figure();
 for n = 1:nInd
-    load(sprintf('tracking_hist_%d',sv(indSv(n))))
+    load(sprintf('%stracking_hist_%d',TRACK_DIRECTORY,sv(indSv(n))))
     
     indGood = ~isnan(cst_hist(1:l));
 
@@ -120,7 +120,7 @@ hold on
 h2 = figure();
 hold on
 for n = 1:nInd
-    load(sprintf('tracking_hist_%d',sv(indSv(n))))    
+    load(sprintf('%stracking_hist_%d',TRACK_DIRECTORY,sv(indSv(n))))    
     
     indGood = ~isnan(cst_err_hist(1:l));
     
@@ -175,7 +175,7 @@ hold on
 h2 = figure();
 hold on
 for n = 1:nInd
-    load(sprintf('tracking_hist_%d',sv(indSv(n))))
+    load(sprintf('%stracking_hist_%d',TRACK_DIRECTORY,sv(indSv(n))))
     t = cst_hist;
     
     indGood = ~isnan(cst_hist(1:l));
@@ -229,7 +229,7 @@ leg = cell(nInd,1);
 figure
 hold on
 for n = 1:nInd
-    load(sprintf('tracking_hist_%d',sv(indSv(n))))    
+    load(sprintf('%stracking_hist_%d',TRACK_DIRECTORY,sv(indSv(n))))    
     t = cst_hist;
     
     indGood = ~isnan(phi_err_hist(1:l));
@@ -261,7 +261,7 @@ leg = cell(nInd,1);
 figure
 hold on
 for n = 1:nInd
-    load(sprintf('tracking_hist_%d',sv(indSv(n))))
+    load(sprintf('%stracking_hist_%d',TRACK_DIRECTORY,sv(indSv(n))))
     indGood = ~isnan(cst_hist(1:l));
         
     plot(cst_hist(indGood),w_df_err_hist(indGood)/(2*pi),'.','Color',color(n,:));
@@ -338,7 +338,7 @@ leg = cell(nInd,1);
 t = linspace(0,l*1e-3,l);
 figure
 for n = 1:nInd
-    load(sprintf('tracking_hist_%d',sv(indSv(n))))
+    load(sprintf('%stracking_hist_%d',TRACK_DIRECTORY,sv(indSv(n))))
         
     subplot(1,2,1)
     hold on
@@ -381,7 +381,7 @@ h1=figure();
 hold on
 h2=figure();
 for n = 1:nInd
-    load(sprintf('tracking_hist_%d',sv(indSv(n))))    
+    load(sprintf('%stracking_hist_%d',TRACK_DIRECTORY,sv(indSv(n))))    
     
     % Use the chi distrubution to estimate the RMS of noise
     
@@ -436,7 +436,7 @@ t = linspace(0,l*1e-3,l);
 ha = tight_subplot(1,nInd,0.01,.1,.075);
 
 for n = 1:nInd
-    load(sprintf('tracking_hist_%d',sv(indSv(n))))
+    load(sprintf('%stracking_hist_%d',TRACK_DIRECTORY,sv(indSv(n))))
     
     indGood = ~isnan(cst_hist(1:l));
     
