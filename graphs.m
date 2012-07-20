@@ -478,7 +478,7 @@ CONSTANTS
 for n = 1:nMax
     subplot(nMax,1,n)
     sec = (n-1)*step+start;
-    sig = LOAD_GPS_DATA(FILE_NAME,sec);
+    sig = LOAD_GPS_DATA(RAW_FILE,sec);
     nfft = 2^(nextpow2(length(sig))-1);
     [Pxx,f] = pwelch(sig,nfft,0,FC+(-5e3:100:5e3),FS);
     plot(f,Pxx)

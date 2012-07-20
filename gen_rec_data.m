@@ -127,7 +127,7 @@ end
 
 % Call CONSTANTS to get the file name.
 clear global;
-global FILE_NAME %#ok<NUSED>
+global RAW_FILE %#ok<NUSED>
 CONSTANTS
 
 % Estimate alpha...

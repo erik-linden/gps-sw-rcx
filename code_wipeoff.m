@@ -4,7 +4,7 @@ CONSTANTS
 load('tracking_hist_1')
 t0 = floor(nanmin(cst_hist));
 
-in_sig = LOAD_GPS_DATA(FILE_NAME, 120);
+in_sig = LOAD_GPS_DATA(RAW_FILE, 120);
 out_sig = zeros(size(in_sig));
 
 code = CACODEGN(1);

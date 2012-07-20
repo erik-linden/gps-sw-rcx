@@ -2,7 +2,7 @@ function [a correction] = GET_ACCELERATION(recTime)
 CONSTANTS;
 
 % Return all zeros if there is no Data Plotter.
-if(isempty(DATA_PLOTTER)||isempty(MAIN_FILE_NAME))
+if(isempty(DATA_PLOTTER)||isempty(MAIN_FILE))
     a = zeros(length(recTime,3));
     correction = zeros(length(recTime,3));
     return
@@ -10,7 +10,7 @@ end
 
 % Add Joakim's data ploter function to the path.
 addpath(DATA_PLOTTER)
-dataPath = MAIN_FILE_NAME;
+dataPath = MAIN_FILE;
 
 % Load FFU data set.
 ffuData = FFUDataSet;

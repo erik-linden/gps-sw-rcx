@@ -31,7 +31,7 @@ switch choose
         tStart = tic;
         for x=1:length(prn)
             % Start by loading the first file.
-            in_sig = LOAD_GPS_DATA(FILE_NAME,fileNo);
+            in_sig = LOAD_GPS_DATA(RAW_FILE,fileNo);
             
             % Set the time offset of the file. Assume all files have the same
             % length.
@@ -65,7 +65,7 @@ switch choose
                     fprintf('PRN %02d FOUND    %s CNo: %2.2f, Doppler Frequency: %+3.f\n', prn(x), string, CNO(magnitude,N_CODES_AQU*1e-3), df-F0);
                     if Nfiles>0
                         corr = GEN_CORR(code);
-                        SIGNAL_TRACKING(df, cst_k, in_sig, prn(x), corr, FILE_NAME, fileNo, t0, Nfiles)
+                        SIGNAL_TRACKING(df, cst_k, in_sig, prn(x), corr, RAW_FILE, fileNo, t0, Nfiles)
                     end
                 end
             else

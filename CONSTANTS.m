@@ -45,8 +45,8 @@ B_FLL = (sqrt(2)*1.89*FLL_BANDWIDTH);%EE = sqrt(2)*w_nF = sqrt(2)*1.89*B_LF
 
 % Data files
 work_dir        = 'D:\Desktop\data\spin_canted\';   %local var
-FILE_NAME       = [work_dir 'raw\20120427_164357_ROOFSPIN_1538.log']; %raw data file name
-MAIN_FILE_NAME  = [work_dir 'main\20120427_164357_ROOFSPIN_MAIN.log.bin.decoded']; %main memory file name
+RAW_FILE        = [work_dir 'raw\20120427_164357_ROOFSPIN_1538.log']; %raw data file name
+MAIN_FILE       = [work_dir 'main\20120427_164357_ROOFSPIN_MAIN.log.bin.decoded']; %main memory file name
 TRACK_DIRECTORY = [work_dir '10msec\'];   %directory that stores tracks
 IS_COMPLEX      = 0;                      %directive to read complex data
 
@@ -63,7 +63,6 @@ POSITION_EXL_RNG = 10;               %exclution range around bad samples
 DOPPLER_DB_LIMIT  = 10;              %minimum SNR needed to be included in doppler [dB]
 DOPPLER_MAX_PHI_ERR = 60;            %maximum phase tracking error [deg]
 DOPPLER_EXL_RNG = 15;                %exclution range around bad samples
-
 
 % Fixed parameters, do not change
 W_FC = 2*pi*FC;                      %angular center frequency

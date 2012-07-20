@@ -7,7 +7,7 @@ function alpha = estimate_noise_alpha(prn, nCodes,file)
 CONSTANTS_H;
 CONSTANTS;
 
-in_sig = LOAD_GPS_DATA(FILE_NAME,file);
+in_sig = LOAD_GPS_DATA(RAW_FILE,file);
 
 nSV = length(prn);
 alphaN = zeros(1,nSV);
