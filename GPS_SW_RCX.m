@@ -99,7 +99,7 @@ switch choose
         if(isempty(setInp))
             setInp = [1000 0 0 1;...
                       100  1 0 1;...
-                      10   1 1 1];
+                      10   1 0 1];
         end
         
         GLOBAL_LS_SOL(sv,setInp)

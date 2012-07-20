@@ -336,11 +336,11 @@ switch string
         J(isnan(J)) = 0;
         
         % ### START PLOTTING ###
-        if true
+        if false
             pos = reshape(beta(1:3*N),[N,3]);
             meanPos = nanmean(pos);
             velTime = (recTime(1:end-1)+recTime(2:end))/2;
-            s=10;       % a down sampling factor
+            s=5;       % a down sampling factor
             
             figure(1)
             
