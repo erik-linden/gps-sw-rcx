@@ -157,6 +157,7 @@ end
 PLL_SWITCH_TIME = PLL_SWITCH_TIME - t0;
 
 % Save all the history vectors.
+[status,message,messageid] = mkdir(TRACK_DIRECTORY);
 save(sprintf('%stracking_hist_%i',TRACK_DIRECTORY,prn),'cst_hist','lock_hist','rmse_hist',...
     'magnitude_hist','w_df_hist','w_df_err_hist','phi_if_hist','tracking_hist','cst_err_hist','phi_err_hist',...
     'chip_rate_hist','COH_INT_TIME');
