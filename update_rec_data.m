@@ -41,12 +41,12 @@ else
 end
 
 % See if there is any position data.
-if exist('pos.mat','file')
+if exist([TRACK_DIRECTORY,'posLS.mat'],'file')
     update = input(['\nA position solution file was found.\n',...
         'Use it to update the receiver file?: ']);
     
     if update
-        load('pos')
+        load([TRACK_DIRECTORY,'posLS.mat'])
         
         % Warn if there might be a file missmatch.
         posGpsTime = gpsTimeHist(1);
