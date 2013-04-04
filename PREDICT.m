@@ -12,7 +12,7 @@ persistent w_df_dot_k phi_act_km trackHist chipRateCorr
 if INITIALIZE
     phi_err_km  = 0;    %previous phase error
     phi_err_km2 = 0;    %next previous phase error
-    w_df_uneObs_km = 0; %previous unexplained doppler
+    w_df_uneObs_km = nan; %previous unexplained doppler
     magnitudeSmooth = magnitude;%smoothed magnitude
     phi_act_km = 0;     %previous phase angle
     w_df_dot_k = 0;     %current frequency drift rate
@@ -91,13 +91,17 @@ if isTracking
     % Select tracking method. PLL_3RD and FLL updates internal error
     % histories. This gives a small error since it isen't controlled by
     % updateErrors, but this is negliable.
-    if USE_PLL && cst_k > PLL_SWITCH_TIME
-        if PLL_LOOP_ORDER == 2
+    if USE_PLL 
+        if PLL_LOOP_ORDER == 2 || cst_k < PLL_SWITCH_TIME
             delta_w_df_estObs = PLL_2ND(cnoRatio, phi_err_k, phi_err_km);
         else
+            if isnan(w_df_uneObs_km)
+                w_df_uneObs_km = w_df_uneObs;
+            end
+            
             delta_w_df_estObs = PLL_3RD(cnoRatio, w_df_uneObs, w_df_uneObs_km, phi_err_k, phi_err_km, phi_err_km2);
-            w_df_uneObs_km = w_df_uneObs;
         end
+        w_df_uneObs_km = w_df_uneObs;
     else
         [delta_w_df_estObs, w_df_dot_kp] = FLL(w_df_dot_k, phi_act_k, phi_act_km);
         w_df_dot_k = w_df_dot_kp;
