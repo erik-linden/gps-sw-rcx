@@ -3,8 +3,9 @@ clear globals;
 CONSTANTS_H;
 CONSTANTS;
 sv = LIST_AVAIL_TRACKS;
+load(sprintf('%stracking_hist_%d',TRACK_DIRECTORY,sv(1)))
 nSv = length(sv);
-l = 296999;
+l = length(cst_hist);
 color = varycolor(nSv);
 c = 299792458;
 
@@ -66,7 +67,7 @@ for n = 1:nInd
     set(0,'CurrentFigure',h1)
     cstVec = cst_hist(indGood);
     yVec = smooth(y_corr(indGood),k);
-    indVec = 1:250:length(cstVec);
+    indVec = 1:1:length(cstVec);
     plot(cstVec(indVec),yVec(indVec),'Color',color(n,:))
 
     set(0,'CurrentFigure',h2)
@@ -111,6 +112,7 @@ fclose all;
 
 %% Plot CST error
 indSv = [1:nSv];
+k = 100;
 
 nInd = length(indSv);
 leg = cell(nInd,1);
@@ -131,8 +133,8 @@ for n = 1:nInd
     
     set(0,'CurrentFigure',h1)
     cstVec = cst_hist(indGood);
-    cstErrVec = smooth(cst_err_hist(indGood),1000)*1023e3;
-    indVec = 1:250:length(cstVec);
+    cstErrVec = smooth(cst_err_hist(indGood),k)*1023e3;
+    indVec = 1:1:length(cstVec);
     plot(cstVec(indVec),cstErrVec(indVec),'Color',color(n,:))
     
     set(0,'CurrentFigure',h2)
@@ -148,10 +150,10 @@ set(0,'CurrentFigure',h1)
 legend(leg)
 ylabel('Chips')
 xlabel('Time [sec]')
-set(0,'CurrentFigure',h2)
-% legend(leg)
+title('CST error')
 
-% title('CST error PDF')
+set(0,'CurrentFigure',h2)
+title('CST error PDF')
 ylabel('Probability')
 xlabel('Prediction error [meter]')
 xlim([-60,60])
@@ -200,12 +202,12 @@ for n = 1:nInd
     drawnow;
 end
 set(0,'CurrentFigure',h1)
-% legend(leg)
+legend(leg)
 % grid on
 % axis tight
-ylim([20,50])
+ylim([25,50])
 % xlim([0,8])
-% title(sprintf('SNR/CNo, smoothed %i msec',k))
+title(sprintf('SNR/CNo, smoothed %i msec',k))
 xlabel('Time [sec]')
 ylabel('CN_0')
 hold off
@@ -240,8 +242,8 @@ for n = 1:nInd
         
     leg(n) = {sprintf('SV%02i - %2.0f deg',sv(indSv(n)),m*180/pi)};
 end
-% legend(leg)
-% title('Phase error')
+legend(leg)
+title('Phase error')
 xlabel('Time [sec]')
 ylabel('Phase error [degree]')
 axis tight
