@@ -77,3 +77,8 @@ end
 % Save solution.
 fprintf('\nSaving solution\n')
 nav_residuals('Func',x)
+
+% Save used settings.
+save(sprintf('%sposLS_settings',TRACK_DIRECTORY),'rangeStd',...
+    'velStd','accStd','jerkStd','cJerkStd','wuaStd')
+
