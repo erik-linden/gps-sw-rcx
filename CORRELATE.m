@@ -29,7 +29,7 @@ if isempty(polarityUnknown) || INITIALIZE
     
     % Compute how much larger one polarity must be than the other to be
     % able to separat them with a given degree of statistical confidence.
-    deltaMax = sqrt(1-pi/4)*noise_std(COH_INT_TIME)*norminv(.9995,0,1);
+    deltaMax = sqrt(1-pi/4)*noise_std(COH_INT_TIME)*8;
 end
 
 I = round(cst/TP);  %find sample nearest to cst
