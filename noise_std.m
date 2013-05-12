@@ -8,9 +8,13 @@ persistent alpha
 
 %Make sure LUT is loaded.
 if ~exist('alpha','var') || INITIALIZE
-    load(RECEIVER_FILE);
-    alpha = Rec.Alpha;
-    clear('Rec');
+    if(~isempty(RECEIVER_FILE))
+        load(RECEIVER_FILE);
+        alpha = Rec.Alpha;
+        clear('Rec');
+    else
+        alpha = 5e3;
+    end
 end
 
 s = alpha*T^0.5;
