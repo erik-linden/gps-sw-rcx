@@ -14,7 +14,7 @@ dataPath = MAIN_FILE;
 
 % Load FFU data set.
 ffuData = FFUDataSet;
-ffuData = ffuData.load_decoded_ex(dataPath,'B',1);
+ffuData = ffuData.load_decoded_ex(dataPath,'N',1);
 
 % Read out accelerometer, gyro and gyroX4.
 [data time info]      = ffuData.getADCChannel(1,[2 1 15]);
@@ -50,7 +50,7 @@ ax = interp1(time,smooth(data(1,:),r),timeI,'linear','extrap');
 ay = interp1(time,smooth(data(2,:),r),timeI,'linear','extrap');
 az = interp1(time,smooth(data(3,:),r),timeI,'linear','extrap');
 
-a = [ax, ay, az];
+a = double([ax, ay, az]);
 
 % Compute accelerometer correction.
 rVec = R_INS_APC;
@@ -63,4 +63,4 @@ cx = interp1(timeG,smooth(corr(1,:),r),timeI,'linear','extrap');
 cy = interp1(timeG,smooth(corr(2,:),r),timeI,'linear','extrap');
 cz = interp1(timeG,smooth(corr(3,:),r),timeI,'linear','extrap');
 
-correction = [cx, cy, cz];
+correction = double([cx, cy, cz]);
