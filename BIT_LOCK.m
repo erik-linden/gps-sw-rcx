@@ -30,7 +30,7 @@ P = sum(histogram((1:20)~=I))/(19*L);
 pNoise = 1-binocdf(N,L,P)^20;
 
 % If there is a high risk of noise, warn the user.
-if pNoise>0.01
+if pNoise>0.001
     warning('There is a %.0f%% risk that the BST is corrupted by noise for SV%02i.',...
         pNoise*100,prn)
 end
