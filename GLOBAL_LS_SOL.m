@@ -1,5 +1,7 @@
 function GLOBAL_LS_SOL(sv,settings)
 
+global TRACK_DIRECTORY
+
 % Standard deviations for different residuals.
 rangeStd    = 10;  % Range std in meters
 velStd      = 0.2; % Doppler std in m/s
